@@ -1,7 +1,12 @@
 <?php
 // Función para registrar el Custom Post Type 'Ciclos Formativos'
+/**
+ * REGISTRO DEL CUSTOM POST TYPE (CPT)
+ * Esta función crea el tipo de contenido "Ciclos Formativos" que aparece en el menú de WordPress.
+ */
 function registrar_cpt_ciclos_fp() {
 
+    // Etiquetas que se verán en el panel de administración
     $labels = array(
         'name'                  => 'Oferta FP',
         'singular_name'         => 'Ciclo Formativo',
@@ -15,26 +20,32 @@ function registrar_cpt_ciclos_fp() {
         'not_found'             => 'No se han encontrado ciclos',
     );
 
+    // Configuración del comportamiento del CPT
     $args = array(
         'label'                 => 'Ciclo Formativo',
         'labels'                => $labels,
-        'supports'              => array( 'title', 'editor', 'thumbnail', 'excerpt' ), // Permite título, texto e imagen
-        'public'                => true,
-        'show_ui'               => true,
-        'show_in_menu'          => true,
-        'menu_position'         => 5,
-        'menu_icon'             => 'dashicons-welcome-learn-more', // Icono de birrete
-        'has_archive'           => true,
-        'hierarchical'          => false,
-        'show_in_rest'          => true, // Importante para que funcione el editor Gutenberg
+        'supports'              => array( 'title', 'editor', 'thumbnail', 'excerpt' ), // Funcionalidades básicas habilitadas
+        'public'                => true,            // Es visible para los usuarios
+        'show_ui'               => true,            // Muestra la interfaz en el admin
+        'show_in_menu'          => true,            // Aparece en el menú lateral
+        'menu_position'         => 5,               // Debajo de "Entradas"
+        'menu_icon'             => 'dashicons-welcome-learn-more', // Icono de birrete (Dashicons)
+        'has_archive'           => true,            // Permite tener una página de listado (tipo /ciclos_fp)
+        'hierarchical'          => false,           // Se comporta como "Entradas", no como "Páginas"
+        'show_in_rest'          => true,            // Habilita el editor Gutenberg (bloques)
     );
 
+    // Registrar oficialmente el tipo de contenido en WordPress
     register_post_type( 'ciclos_fp', $args );
 }
 
 add_action( 'init', 'registrar_cpt_ciclos_fp' );
 
 // 1. Crear la caja de campos en el editor
+/**
+ * META BOXES (CAMPOS PERSONALIZADOS)
+ * 1. Crear la caja de campos en el editor de cada ciclo.
+ */
 function agregar_campos_ciclo_fp() {
     add_meta_box(
         'detalles_ciclo_box',           // ID único
@@ -48,20 +59,27 @@ function agregar_campos_ciclo_fp() {
 add_action( 'add_meta_boxes', 'agregar_campos_ciclo_fp' );
 
 // 2. Dibujar el HTML de los campos
+/**
+ * 2. Dibujar el HTML de los campos dentro de la caja del editor.
+ */
 function mostrar_campos_ciclo_fp( $post ) {
     // Recuperamos los valores actuales de la base de datos
+    // Recuperamos los valores guardados (si existen) de la base de datos (Post Meta)
     $horas   = get_post_meta( $post->ID, '_ciclo_horas', true );
     $turno   = get_post_meta( $post->ID, '_ciclo_turno', true );
     $nivel   = get_post_meta( $post->ID, '_ciclo_nivel', true );
     $pdf_url = get_post_meta( $post->ID, '_ciclo_pdf', true );
 
+    // Cargamos la librería de medios de WordPress (para el PDF)
     wp_enqueue_media();
     ?>
+    <!-- Campo para Horas -->
     <p>
         <label><strong>Horas Totales:</strong></label><br>
         <input type="text" name="ciclo_horas" placeholder="2.000 horas" value="<?php echo esc_attr($horas); ?>" style="width:100%;">
     </p>
 
+    <!-- Selector de Nivel -->
     <p>
         <label><strong>Nivel del Ciclo:</strong></label><br>
         <select name="ciclo_nivel" style="width:100%;">
@@ -72,6 +90,7 @@ function mostrar_campos_ciclo_fp( $post ) {
         </select>
     </p>
 
+    <!-- Selector de Turno -->
     <p>
         <label><strong>Turno:</strong></label><br>
         <select name="ciclo_turno" style="width:100%;">
@@ -81,6 +100,7 @@ function mostrar_campos_ciclo_fp( $post ) {
         </select>
     </p>
 			
+    <!-- Campo de PDF con botones para abrir la biblioteca de medios -->
     <p>
         <label><strong>PDF del Currículo:</strong></label><br>
         <input type="text" id="ciclo_pdf_url" name="ciclo_pdf" value="<?php echo esc_url($pdf_url); ?>" style="width:75%;" readonly>
@@ -88,6 +108,7 @@ function mostrar_campos_ciclo_fp( $post ) {
         <button type="button" id="boton_limpiar_pdf" class="button">Borrar</button>
     </p>
 
+    <!-- Script para manejar la ventana emergente de selección de archivos -->
     <script>
     jQuery(document).ready(function($){
         $('#boton_subir_pdf').click(function(e) {
@@ -108,6 +129,10 @@ function mostrar_campos_ciclo_fp( $post ) {
     <?php
 }
 // 3. Guardar los datos cuando se pulsa "Actualizar"
+
+/**
+ * 3. Guardar los datos cuando el usuario pulsa "Actualizar" o "Publicar".
+ */
 function guardar_campos_ciclo_fp( $post_id ) {
     // Seguridad: Si WordPress está haciendo un autosave, no guardamos nada
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -118,6 +143,7 @@ function guardar_campos_ciclo_fp( $post_id ) {
     }
 
     // Guardar Nivel (¡Esta es la que te faltaba procesar!)
+    // Guardar Nivel
     if ( isset( $_POST['ciclo_nivel'] ) ) {
         update_post_meta( $post_id, '_ciclo_nivel', sanitize_text_field( $_POST['ciclo_nivel'] ) );
     }
@@ -138,13 +164,20 @@ add_action( 'save_post', 'guardar_campos_ciclo_fp' );
 
 
 // // Función MEJORADA para mostrar la ficha técnica en la web
+/**
+ * VISUALIZACIÓN EN EL FRONTEND
+ * Esta función inyecta una "Ficha Técnica" visual antes del contenido de cada ciclo.
+ */
 function mostrar_ficha_tecnica_ciclo( $content ) {
+    // Solo actuar si estamos viendo un post individual del tipo 'ciclos_fp'
     if ( is_singular( 'ciclos_fp' ) ) {
         $id_actual = get_the_ID();
+        // Obtener los datos que guardamos antes
         $horas = get_post_meta( $id_actual, '_ciclo_horas', true );
         $turno = get_post_meta( $id_actual, '_ciclo_turno', true );
         $pdf   = get_post_meta( $id_actual, '_ciclo_pdf', true );
         
+        // Obtener la Familia Profesional asociada para saber el color
         $familias = get_the_terms( $id_actual, 'familia_fp' );
         $color_familia = '#0056b3'; // Color por defecto
         $nombre_familia = 'Formación Profesional';
@@ -154,6 +187,7 @@ function mostrar_ficha_tecnica_ciclo( $content ) {
             $nombre_familia = $familia_obj->name;
             
             // --- AQUÍ ESTÁ EL CAMBIO: Leemos el color del mantenimiento ---
+            // Leemos el color que se configuró en la categoría (taxonomía)
             $color_guardado = get_term_meta($familia_obj->term_id, 'color_familia', true);
             if ($color_guardado) {
                 $color_familia = $color_guardado;
@@ -163,6 +197,7 @@ function mostrar_ficha_tecnica_ciclo( $content ) {
 
 		
         // El resto del HTML se mantiene igual, pero ahora $color_familia es dinámico
+        // Construcción del bloque visual (HTML con estilos en línea)
         $ficha_html = '
         <div class="ficha-tecnica-ies" style="background: #fff; border: 1px solid #eee; border-left: 8px solid ' . $color_familia . '; padding: 25px; margin: 25px 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -181,17 +216,15 @@ function mostrar_ficha_tecnica_ciclo( $content ) {
                     <span style="font-size: 1.1rem;">' . ucfirst(esc_html($turno)) . '</span>
                 </div>';
 	
-				//CAMPO NIVEL
-// Busca esta parte dentro de mostrar_ficha_tecnica_ciclo
-$nivel = get_post_meta( $id_actual, '_ciclo_nivel', true ) ?: 'Grado Medio';
-
-// Añade el HTML dentro de la rejilla de detalles (donde están las horas y el turno)
-$ficha_html .= '
-    <div>
-        <span style="display:block; font-weight: bold; color: #777; font-size: 0.75rem; text-transform: uppercase;">🎓 Nivel Académico</span>
-        <span style="display: inline-block; background: #f0f0f0; color: #333; padding: 2px 10px; border-radius: 4px; font-size: 0.9rem; margin-top: 5px; font-weight: 500; border: 1px solid #ddd;">' . esc_html($nivel) . '</span>
-    </div>';
+        // Obtener y añadir el Nivel Académico (Limpiado duplicado)
+        $nivel = get_post_meta( $id_actual, '_ciclo_nivel', true ) ?: 'Grado Medio';
+        $ficha_html .= '
+            <div>
+                <span style="display:block; font-weight: bold; color: #777; font-size: 0.75rem; text-transform: uppercase;">🎓 Nivel Académico</span>
+                <span style="display: inline-block; background: #f0f0f0; color: #333; padding: 2px 10px; border-radius: 4px; font-size: 0.9rem; margin-top: 5px; font-weight: 500; border: 1px solid #ddd;">' . esc_html($nivel) . '</span>
+            </div>';
         
+        // Si hay PDF, añadir el botón de descarga
         if ( !empty($pdf) ) {
             $ficha_html .= '
                 <div style="grid-column: 1 / -1;">
@@ -202,6 +235,7 @@ $ficha_html .= '
         }
         $ficha_html .= '</div></div>';
 
+        // Retornamos la ficha concatenada con el contenido original de la página
         return $ficha_html . $content;
     }
     return $content;
@@ -211,6 +245,10 @@ $ficha_html .= '
 add_filter( 'the_content', 'mostrar_ficha_tecnica_ciclo', 10 );
 
 // Función para registrar la taxonomía de Familias Profesionales
+/**
+ * TAXONOMÍA PERSONALIZADA (FAMILIAS PROFESIONALES)
+ * Esto funciona como las categorías de las entradas normales, pero solo para FP.
+ */
 function registrar_taxonomia_familias() {
 
     $labels = array(
@@ -228,11 +266,11 @@ function registrar_taxonomia_familias() {
     );
 
     $args = array(
-        'hierarchical'      => true, // Para que aparezcan cuadraditos de selección (como categorías)
+        'hierarchical'      => true, // Comportamiento de categorías (con padres/hijos)
         'labels'            => $labels,
         'show_ui'           => true,
         'show_admin_column' => true, // Para que se vea en la lista de ciclos
-        'query_var'         => true,
+        'query_var'         => true, // Permite hacer búsquedas por familia en la URL
         'rewrite'           => array( 'slug' => 'familia-profesional' ),
         'show_in_rest'      => true, // Obligatorio para que aparezca en el editor moderno (Gutenberg)
     );
@@ -243,27 +281,56 @@ function registrar_taxonomia_familias() {
 
 add_action( 'init', 'registrar_taxonomia_familias' );
 
-//añadir color a la familia
+/**
+ * SCRIPTS PARA EL COLOR PICKER
+ * Carga los archivos necesarios para que WordPress muestre el selector de color.
+ */
+function admin_color_picker_scripts( $hook ) {
+    // Solo cargamos en las pantallas de edición de la taxonomía familia_fp
+    if ( ( 'edit-tags.php' === $hook || 'term.php' === $hook ) && isset( $_GET['taxonomy'] ) && 'familia_fp' === $_GET['taxonomy'] ) {
+        wp_enqueue_style( 'wp-color-picker' );
+        wp_enqueue_script( 'wp-color-picker' );
+        
+        // Pequeño script para inicializarlo en los campos con la clase .color-picker-field
+        add_action( 'admin_footer', function() {
+            ?>
+            <script>
+            jQuery(document).ready(function($){
+                $('.color-picker-field').wpColorPicker();
+            });
+            </script>
+            <?php
+        });
+    }
+}
+add_action( 'admin_enqueue_scripts', 'admin_color_picker_scripts' );
+
+/**
+ * COLOR PERSONALIZADO PARA FAMILIAS
+ * 1. Añadir campo de color al formulario de "Nueva Familia"
+ */
 function agregar_campo_color_familia($taxonomy) {
     ?>
     <div class="form-field term-group">
-        <label for="color_familia">Color de la Familia (Hexadecimal)</label>
-        <input type="text" name="color_familia" id="color_familia" value="#0056b3">
-        <p>Ejemplo: #2ecc71 para verde, #e74c3c para rojo. <a href="https://htmlcolorcodes.com/es/" target="_blank">Elegir color aquí</a>.</p>
+        <label for="color_familia">Color de la Familia</label>
+        <input type="text" name="color_familia" id="color_familia" value="#0056b3" class="color-picker-field">
+        <p class="description">Selecciona el color que identificará a esta familia profesional en la web.</p>
     </div>
     <?php
 }
 add_action('familia_fp_add_form_fields', 'agregar_campo_color_familia', 10, 1);
 
-// 2. Añadir campo al formulario de "Editar Familia"
+/**
+ * 2. Añadir campo al formulario de "Editar Familia"
+ */
 function editar_campo_color_familia($term, $taxonomy) {
     $color = get_term_meta($term->term_id, 'color_familia', true);
     ?>
     <tr class="form-field term-group">
         <th scope="row"><label for="color_familia">Color de la Familia</label></th>
         <td>
-            <input type="text" name="color_familia" id="color_familia" value="<?php echo esc_attr($color ? $color : '#0056b3'); ?>">
-            <p class="description">Color que tendrá la ficha y la tarjeta de esta familia profesional.</p>
+            <input type="text" name="color_familia" id="color_familia" value="<?php echo esc_attr($color ? $color : '#0056b3'); ?>" class="color-picker-field">
+            <p class="description">Este color se aplicará automáticamente a la ficha técnica y a las tarjetas del listado.</p>
         </td>
     </tr>
     <?php
@@ -271,6 +338,9 @@ function editar_campo_color_familia($term, $taxonomy) {
 add_action('familia_fp_edit_form_fields', 'editar_campo_color_familia', 10, 2);
 
 // 3. Guardar el color cuando se guarda la familia
+/**
+ * 3. Guardar el color cuando se crea o edita la familia profesional.
+ */
 function guardar_color_familia($term_id) {
     if (isset($_POST['color_familia'])) {
         update_term_meta($term_id, 'color_familia', sanitize_hex_color($_POST['color_familia']));
@@ -282,11 +352,16 @@ add_action('edited_familia_fp', 'guardar_color_familia', 10, 1);
 
 //MUESTRA UN LISTADO DE FAMILIAS
 // 1. SHORTCODE: MENÚ DE FILTROS (Botones)
+/**
+ * SHORTCODE: [menu_familias]
+ * Crea el buscador de texto y los botones de filtro por familia.
+ */
 function funcion_shortcode_menu_familias() {
+    // Obtener todas las familias que tienen al menos un ciclo asignado
     $familias = get_terms( array('taxonomy' => 'familia_fp', 'hide_empty' => true) );
     if ( is_wp_error( $familias ) || empty( $familias ) ) return '';
 
-    $total_ciclos = wp_count_posts('ciclos_fp')->publish;
+    $total_ciclos = wp_count_posts('ciclos_fp')->publish; // Contador total de ciclos
 
     // Estructura del Buscador + Filtros
     $output = '<div class="controles-fp" style="margin-bottom: 30px; background: #f9f9f9; padding: 20px; border-radius: 15px;">';
@@ -305,6 +380,7 @@ function funcion_shortcode_menu_familias() {
         $total_ciclos
     );
 
+    // Botón para cada familia con su color asignado
     foreach ( $familias as $familia ) {
         $color = get_term_meta( $familia->term_id, 'color_familia', true ) ?: '#0056b3';
         $output .= sprintf(
@@ -320,9 +396,15 @@ add_shortcode( 'menu_familias', 'funcion_shortcode_menu_familias' );
 
 
 // 2. SHORTCODE: LISTADO DE CICLOS (Con clases de filtrado)
+/**
+ * SHORTCODE: [lista_ciclos]
+ * Crea la rejilla (grid) de tarjetas de todos los ciclos formativos.
+ */
 function funcion_shortcode_lista_ciclos() {
+    // Consultar todos los ciclos publicados ordenados por título
     $query = new WP_Query( array('post_type' => 'ciclos_fp', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC') );
     
+    // Estilos CSS para la rejilla
     $output = '<style>
         .grid-fp { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .tarjeta-fp { transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; }
@@ -332,10 +414,12 @@ function funcion_shortcode_lista_ciclos() {
 
     $output .= '<div class="grid-fp" id="contenedor-ciclos">';
 
+    // Bucle para recorrer los resultados de la consulta
     if ( $query->have_posts() ) {
         while ( $query->have_posts() ) {
             $query->the_post();
             $familias = get_the_terms( get_the_ID(), 'familia_fp' );
+            // Valores por defecto
             $clase_familia = ''; $nombre_familia = 'FP'; $color_familia = '#0056b3';
 
             if ( !is_wp_error( $familias ) && !empty( $familias ) ) {
@@ -345,6 +429,7 @@ function funcion_shortcode_lista_ciclos() {
             }
 
             // Guardamos el título en minúsculas en un atributo data para el buscador
+            // HTML de cada tarjeta individual
             $output .= sprintf(
                 '<div class="tarjeta-fp %s" data-nombre="%s" style="background:#fff; border-top:6px solid %s; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
                     <div>
@@ -361,6 +446,10 @@ function funcion_shortcode_lista_ciclos() {
     $output .= '</div>';
 
     // 3. JAVASCRIPT: Lógica Combinada (Buscador + Filtros)
+    /**
+     * JAVASCRIPT: Lógica de filtrado en tiempo real.
+     * Funciona comparando el texto del buscador y el botón de familia seleccionado.
+     */
     $output .= "
     <script>
     document.addEventListener('DOMContentLoaded', function() {
