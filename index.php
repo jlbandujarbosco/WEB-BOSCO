@@ -417,8 +417,12 @@ function funcion_shortcode_lista_ciclos() {
     
     // Estilos CSS para la rejilla
     $output = '<style>
-        .grid-fp { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .tarjeta-fp { transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; }
+        .grid-fp { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; align-items: stretch; }
+        .tarjeta-fp { transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .tarjeta-fp:hover { 
+            transform: translateY(-10px); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important; 
+        }
         .tarjeta-fp.hidden-filter { display: none !important; }
         #buscador-fp:focus { border-color: #0056b3 !important; }
     </style>';
@@ -448,11 +452,12 @@ function funcion_shortcode_lista_ciclos() {
                 '<div class="tarjeta-fp %s" data-nombre="%s" data-nivel="%s" data-family="%s" style="background:#fff; border-top:6px solid %s; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
                     <div>
                         <span style="color:%s; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">%s</span>
-                        <h4 style="margin:12px 0; color:#333; line-height:1.3;">%s</h4>
+                        <h4 style="margin:12px 0 5px 0; color:#333; line-height:1.3;">%s</h4>
+                        <span style="display:inline-block; font-size:0.8rem; color:#777; margin-bottom:15px; background:#f0f0f0; padding:2px 8px; border-radius:4px;">%s</span>
                     </div>
                     <a href="%s" style="background:%s; color:#fff; text-decoration:none; padding:10px; border-radius:8px; text-align:center; font-size:0.95rem; font-weight:500;">Ver detalles</a>
                 </div>',
-                $clase_familia, mb_strtolower(get_the_title()), esc_attr($nivel_ciclo), esc_attr($clase_familia), $color_familia, $color_familia, $nombre_familia, get_the_title(), get_permalink(), $color_familia
+                $clase_familia, mb_strtolower(get_the_title()), esc_attr($nivel_ciclo), esc_attr($clase_familia), $color_familia, $color_familia, $nombre_familia, get_the_title(), esc_html($nivel_ciclo), get_permalink(), $color_familia
             );
         }
         wp_reset_postdata();

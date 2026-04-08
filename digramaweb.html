@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura Web IES - Nueva Ley FP</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+        .sitemap {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .node {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-top: 6px solid var(--primary);
+        }
+        .node h3 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 0.95rem;
+        }
+        li strong {
+            color: #334155;
+            display: block;
+        }
+        .dual-badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .highlight {
+            background: #eff6ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<h1 style="text-align:center; margin-bottom: 40px;">Estructura Web Estratégica IES (Era FP Dual)</h1>
+
+<div class="sitemap">
+    <!-- BLOQUE 1: OFERTA ACADÉMICA -->
+    <div class="node">
+        <h3>📚 Oferta Educativa</h3>
+        <ul>
+            <li><strong>ESO y Bachillerato</strong> (Ciencias, Humanidades, Artes).</li>
+            <li><strong>Ciclos Grado Medio</strong> <span class="dual-badge">Dual Intensiva</span></li>
+            <li><strong>Ciclos Grado Superior</strong> <span class="dual-badge">Dual Intensiva</span></li>
+            <li><strong>Cursos de Especialización</strong> (Másteres de la FP).</li>
+            <li><strong>FP Básica</strong> (Programas de éxito educativo).</li>
+        </ul>
+        <div class="highlight">
+            ⭐ <em>Novedad:</em> Fichas con itinerarios hacia la Universidad o especialización.
+        </div>
+    </div>
+
+    <!-- BLOQUE 2: EMPRESA Y DUAL -->
+    <div class="node" style="border-top-color: var(--accent);">
+        <h3>🏢 Empresa y FP Dual</h3>
+        <ul>
+            <li><strong>Portal de Empresas</strong> (Convenios y beneficios).</li>
+            <li><strong>Plan de Formación Dual</strong> (Explicación para familias).</li>
+            <li><strong>Gestión de Exenciones FCT</strong> (Trámites Nueva Ley).</li>
+            <li><strong>Bolsa de Empleo</strong> (Inserción laboral de titulados).</li>
+            <li><strong>Aulas de Emprendimiento</strong> (Aulas ATECA).</li>
+        </ul>
+        <div class="highlight">
+            📢 <em>Vital:</em> Sección dedicada a captar nuevas empresas colaboradoras.
+        </div>
+    </div>
+
+    <!-- BLOQUE 3: EL INSTITUTO -->
+    <div class="node" style="border-top-color: #10b981;">
+        <h3>🏫 Vida en el Centro</h3>
+        <ul>
+            <li><strong>Secretaría Virtual</strong> (Admisión, becas y títulos).</li>
+            <li><strong>Proyectos Europeos</strong> (Erasmus+ KA1/KA2).</li>
+            <li><strong>Innovación</strong> (Proyectos ATECA y Digitalización).</li>
+            <li><strong>Orientación Académica</strong> (Plan de acogida).</li>
+            <li><strong>Revista / Blog</strong> (Actividades y salidas).</li>
+        </ul>
+    </div>
+
+    <!-- BLOQUE 4: SERVICIOS Y COMUNICACIÓN -->
+    <div class="node" style="border-top-color: #8b5cf6;">
+        <h3>🔗 Canales Digitales</h3>
+        <ul>
+            <li><strong>Acceso Plataformas</strong> (EducamosCLM / iPasen / Moodle).</li>
+            <li><strong>Canal Ético / Convivencia</strong> (Protocolos acoso).</li>
+            <li><strong>Calendario Escolar</strong> (Eventos y exámenes).</li>
+            <li><strong>Redes Sociales</strong> (Instagram/TikTok corporativo).</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
