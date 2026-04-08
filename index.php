@@ -366,17 +366,28 @@ function funcion_shortcode_menu_familias() {
     // Estructura del Buscador + Filtros
     $output = '<div class="controles-fp" style="margin-bottom: 30px; background: #f9f9f9; padding: 20px; border-radius: 15px;">';
     
-    // El Input del Buscador
+    // El Input del Buscador y Selector de Nivel
     $output .= '
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="buscador-fp" placeholder="🔍 Buscar ciclo por nombre (ej: Aplicaciones, Cuidados...)" 
-               style="width: 100%; padding: 12px 20px; border-radius: 10px; border: 2px solid #ddd; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 250px;">
+            <input type="text" id="buscador-fp" placeholder="🔍 Buscar ciclo por nombre (ej: Aplicaciones, Cuidados...)" 
+                   style="width: 100%; padding: 12px 20px; border-radius: 10px; border: 2px solid #ddd; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+        </div>
+        <div style="min-width: 200px;">
+            <select id="filtro-nivel" style="width: 100%; padding: 12px 20px; border-radius: 10px; border: 2px solid #ddd; font-size: 1rem; background: #fff; cursor: pointer;">
+                <option value="all">🎓 Todos los niveles</option>
+                <option value="Grado Medio">Grado Medio</option>
+                <option value="Grado Superior">Grado Superior</option>
+                <option value="FP Básica">FP Básica</option>
+                <option value="Curso Especialización">Curso de Especialización</option>
+            </select>
+        </div>
     </div>';
 
     // Los Botones de Familia
     $output .= '<div class="filtros-fp" style="display: flex; flex-wrap: wrap; gap: 10px;">';
     $output .= sprintf(
-        '<button class="btn-filtro active" data-filter="all" style="background:#333; color:#fff; border:none; padding:10px 22px; border-radius:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:8px;">Todos <span style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:10px; font-size:0.8rem;">%s</span></button>',
+        '<button class="btn-filtro active" data-filter="all" style="background:#333; color:#fff; border:none; padding:10px 22px; border-radius:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:8px;">Todos <span class="count-badge" data-family="all" style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:10px; font-size:0.8rem;">%s</span></button>',
         $total_ciclos
     );
 
@@ -384,8 +395,8 @@ function funcion_shortcode_menu_familias() {
     foreach ( $familias as $familia ) {
         $color = get_term_meta( $familia->term_id, 'color_familia', true ) ?: '#0056b3';
         $output .= sprintf(
-            '<button class="btn-filtro" data-filter="fam-%s" style="background:%s; color:#fff; border:none; padding:10px 22px; border-radius:30px; cursor:pointer; font-weight:bold; opacity:0.8; transition:0.3s; display:flex; align-items:center; gap:8px;">%s <span style="background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:10px; font-size:0.8rem;">%s</span></button>',
-            esc_attr($familia->slug), esc_attr($color), esc_html($familia->name), $familia->count
+            '<button class="btn-filtro" data-filter="fam-%s" style="background:%s; color:#fff; border:none; padding:10px 22px; border-radius:30px; cursor:pointer; font-weight:bold; opacity:0.8; transition:0.3s; display:flex; align-items:center; gap:8px;">%s <span class="count-badge" data-family="fam-%s" style="background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:10px; font-size:0.8rem;">%s</span></button>',
+            esc_attr($familia->slug), esc_attr($color), esc_html($familia->name), esc_attr($familia->slug), $familia->count
         );
     }
     $output .= '</div></div>';
@@ -428,17 +439,20 @@ function funcion_shortcode_lista_ciclos() {
                 $color_familia = get_term_meta($familias[0]->term_id, 'color_familia', true) ?: '#0056b3';
             }
 
+            // Obtenemos el nivel para el atributo data
+            $nivel_ciclo = get_post_meta( get_the_ID(), '_ciclo_nivel', true ) ?: 'Grado Medio';
+
             // Guardamos el título en minúsculas en un atributo data para el buscador
             // HTML de cada tarjeta individual
             $output .= sprintf(
-                '<div class="tarjeta-fp %s" data-nombre="%s" style="background:#fff; border-top:6px solid %s; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+                '<div class="tarjeta-fp %s" data-nombre="%s" data-nivel="%s" data-family="%s" style="background:#fff; border-top:6px solid %s; border-radius:12px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
                     <div>
                         <span style="color:%s; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">%s</span>
                         <h4 style="margin:12px 0; color:#333; line-height:1.3;">%s</h4>
                     </div>
                     <a href="%s" style="background:%s; color:#fff; text-decoration:none; padding:10px; border-radius:8px; text-align:center; font-size:0.95rem; font-weight:500;">Ver detalles</a>
                 </div>',
-                $clase_familia, mb_strtolower(get_the_title()), $color_familia, $color_familia, $nombre_familia, get_the_title(), get_permalink(), $color_familia
+                $clase_familia, mb_strtolower(get_the_title()), esc_attr($nivel_ciclo), esc_attr($clase_familia), $color_familia, $color_familia, $nombre_familia, get_the_title(), get_permalink(), $color_familia
             );
         }
         wp_reset_postdata();
@@ -454,28 +468,63 @@ function funcion_shortcode_lista_ciclos() {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const buscador = document.getElementById('buscador-fp');
+        const selectorNivel = document.getElementById('filtro-nivel');
         const botones = document.querySelectorAll('.btn-filtro');
         const tarjetas = document.querySelectorAll('.tarjeta-fp');
+        const badges = document.querySelectorAll('.count-badge');
+
         let filtroActual = 'all';
+        let nivelActual = 'all';
 
         function filtrar() {
             const texto = buscador.value.toLowerCase();
+            
+            // Reiniciar contadores dinámicamente según los badges que existen
+            const conteos = {};
+            badges.forEach(badge => {
+                conteos[badge.getAttribute('data-family')] = 0;
+            });
 
             tarjetas.forEach(tarjeta => {
                 const nombre = tarjeta.getAttribute('data-nombre');
+                const nivel = tarjeta.getAttribute('data-nivel');
+                const familia = tarjeta.getAttribute('data-family');
+                
                 const coincideTexto = nombre.includes(texto);
+                const coincideNivel = (nivelActual === 'all' || nivel === nivelActual);
+
+                // Si coincide el buscador y el nivel, sumamos a los contadores
+                if (coincideTexto && coincideNivel) {
+                    conteos['all']++;
+                    if (familia && conteos.hasOwnProperty(familia)) {
+                        conteos[familia]++;
+                    }
+                }
+
                 const coincideFamilia = (filtroActual === 'all' || tarjeta.classList.contains(filtroActual));
 
-                if (coincideTexto && coincideFamilia) {
+                if (coincideTexto && coincideFamilia && coincideNivel) {
                     tarjeta.classList.remove('hidden-filter');
                 } else {
                     tarjeta.classList.add('hidden-filter');
                 }
             });
+
+            // Actualizar los números (badges) en los botones
+            badges.forEach(badge => {
+                const key = badge.getAttribute('data-family');
+                badge.textContent = conteos[key] || 0;
+            });
         }
 
         // Evento Buscador
         buscador.addEventListener('input', filtrar);
+
+        // Evento Selector de Nivel
+        selectorNivel.addEventListener('change', function() {
+            nivelActual = this.value;
+            filtrar();
+        });
 
         // Evento Botones
         botones.forEach(boton => {

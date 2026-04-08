@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esquema de Funcionamiento FP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h2 { text-align: center; color: #2c3e50; }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 5px solid #0056b3;
+        }
+        
+        .flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .box {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .admin-box { background: #e3f2fd; border: 2px solid #2196f3; color: #0d47a1; }
+        .logic-box { background: #fff3e0; border: 2px solid #ff9800; color: #e65100; }
+        .web-box { background: #e8f5e9; border: 2px solid #4caf50; color: #1b5e20; }
+        
+        .arrow {
+            font-size: 24px;
+            color: #999;
+        }
+        
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            background: #eee;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Estructura Técnica del Sistema FP</h2>
+
+    <div class="section">
+        <h3>1. Configuración (Al iniciar WordPress)</h3>
+        <div class="flow">
+            <div class="box admin-box">
+                registrar_cpt_ciclos_fp()<br>
+                <span class="badge">Crea el menú "Oferta FP"</span>
+            </div>
+            <div class="arrow">↓</div>
+            <div class="box admin-box">
+                registrar_taxonomia_familias()<br>
+                <span class="badge">Crea las "Categorías de Familia"</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="border-top-color: #ff9800;">
+        <h3>2. El Editor (Cuando añades un ciclo)</h3>
+        <div class="flow">
+            <div class="box logic-box">
+                mostrar_campos_ciclo_fp()<br>
+                <span class="badge">Dibuja: Horas, Nivel, Turno y PDF</span>
+            </div>
+            <div class="arrow">↓</div>
+            <div class="box logic-box">
+                guardar_campos_ciclo_fp()<br>
+                <span class="badge">Guarda los datos en la Base de Datos</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="border-top-color: #4caf50;">
+        <h3>3. La Web (Lo que ve el alumno)</h3>
+        <div class="grid-info">
+            <div class="box web-box" style="width: auto;">
+                [menu_familias]<br>
+                <span class="badge">Buscador y Filtros</span>
+            </div>
+            <div class="box web-box" style="width: auto;">
+                [lista_ciclos]<br>
+                <span class="badge">Tarjetas de Colores</span>
+            </div>
+        </div>
+        <div class="flow" style="margin-top: 15px;">
+            <div class="box web-box">
+                mostrar_ficha_tecnica_ciclo()<br>
+                <span class="badge">Inyecta el cuadro de detalles arriba del texto</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
