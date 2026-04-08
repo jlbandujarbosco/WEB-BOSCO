@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura Web IES - Doble Menú Horizontal con Blog</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --white: #ffffff;
+            --top-bar-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* BARRA SUPERIOR (TOP BAR) */
+        .top-nav {
+            background: var(--top-bar-bg);
+            color: white;
+            height: 40px;
+            font-size: 0.85rem;
+        }
+
+        .top-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+        }
+
+        .top-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 20px;
+        }
+
+        .top-menu a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .top-menu a:hover {
+            color: white;
+        }
+
+        /* BARRA PRINCIPAL (MAIN NAV) */
+        .main-nav {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 80px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-symbol {
+            background: var(--primary);
+            color: white;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        .menu-principal {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .menu-item {
+            position: relative;
+            height: 100%;
+        }
+
+        .menu-link {
+            padding: 0 15px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .menu-link:hover {
+            color: var(--primary);
+            background: #f8faff;
+        }
+
+        /* SUBMENÚ */
+        .submenu {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            background: var(--white);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            min-width: 250px;
+            display: none;
+            list-style: none;
+            padding: 15px 0;
+            border-radius: 0 0 12px 12px;
+            border-top: 4px solid var(--primary);
+        }
+
+        .menu-item:hover .submenu {
+            display: block;
+        }
+
+        .submenu li a {
+            padding: 12px 25px;
+            display: block;
+            text-decoration: none;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .submenu li a:hover {
+            background: #eff6ff;
+            color: var(--primary);
+            padding-left: 30px;
+        }
+
+        /* SECCIONES DE CONTENIDO */
+        .section-header {
+            padding: 60px 20px;
+            background: #fff;
+            text-align: center;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .section-title {
+            max-width: 1200px;
+            margin: 40px auto 20px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title h2 {
+            font-size: 1.8rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .blog-grid {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            transition: transform 0.3s;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .blog-content {
+            padding: 20px;
+        }
+
+        .blog-date {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .blog-category {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .tag {
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .btn-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <div class="top-container">
+        <ul class="top-menu">
+            <li><a href="#">Secretaría Virtual</a></li>
+            <li><a href="#">Portal de Empresas</a></li>
+            <li><a href="#">Calendario</a></li>
+            <li><a href="#">Contacto</a></li>
+        </ul>
+    </div>
+</div>
+
+<nav class="main-nav">
+    <div class="main-container">
+        <a href="#" class="logo">
+            <div class="logo-symbol">J</div>
+            IES JUAN BOSCO
+        </a>
+        <ul class="menu-principal">
+            <li class="menu-item">
+                <a href="#" class="menu-link">Oferta Educativa ▾</a>
+                <ul class="submenu">
+                    <li><a href="#">ESO y Bachillerato</a></li>
+                    <li><a href="#">Grado Medio <span class="tag">DUAL</span></a></li>
+                    <li><a href="#">Grado Superior <span class="tag">DUAL</span></a></li>
+                    <li><a href="#">Cursos de Especialización</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">El Centro ▾</a>
+                <ul class="submenu">
+                    <li><a href="#">Nuestro Proyecto</a></li>
+                    <li><a href="#">Erasmus+</a></li>
+                    <li><a href="#">Innovación (ATECA)</a></li>
+                    <li><a href="#">Orientación</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">Actualidad ▾</a>
+                <ul class="submenu">
+                    <li><a href="#">Revista Digital</a></li>
+                    <li><a href="#">Actividades y Salidas</a></li>
+                    <li><a href="#">Galería de Fotos</a></li>
+                    <li><a href="#">Noticias</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">Empresa y Dual ▾</a>
+                <ul class="submenu">
+                    <li><a href="#">Colabora con el IES</a></li>
+                    <li><a href="#">FP Dual Intensiva</a></li>
+                    <li><a href="#">Bolsa de Empleo</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<header class="section-header">
+    <h1>Revista & Blog Escolar</h1>
+    <p>Descubre el día a día de nuestro alumnado: proyectos, excursiones y novedades del mundo de la FP.</p>
+</header>
+
+<div class="section-title">
+    <h2>Últimas Actividades</h2>
+    <a href="#" class="btn-more">Ver todo el blog →</a>
+</div>
+
+<div class="blog-grid">
+    <!-- Entrada 1 -->
+    <div class="blog-card">
+        <div class="blog-image">🚌</div>
+        <div class="blog-content">
+            <span class="blog-category">Salidas Didácticas</span>
+            <span class="blog-date">12 de Mayo, 2024</span>
+            <h3>Visita a la Feria de Innovación Tecnológica</h3>
+            <p>Los alumnos de Grado Superior de Mecatrónica visitaron las instalaciones del parque tecnológico...</p>
+        </div>
+    </div>
+
+    <!-- Entrada 2 -->
+    <div class="blog-card">
+        <div class="blog-image">🌍</div>
+        <div class="blog-content">
+            <span class="blog-category">Erasmus+</span>
+            <span class="blog-date">5 de Mayo, 2024</span>
+            <h3>Nuestros alumnos en prácticas en Berlín</h3>
+            <p>Primera crónica de los estudiantes de Administración que están realizando su formación dual en Alemania.</p>
+        </div>
+    </div>
+
+    <!-- Entrada 3 -->
+    <div class="blog-card">
+        <div class="blog-image">🏆</div>
+        <div class="blog-content">
+            <span class="blog-category">Premios</span>
+            <span class="blog-date">28 de Abril, 2024</span>
+            <h3>Finalistas en el Concurso de Emprendimiento</h3>
+            <p>El proyecto "Eco-Bosco" del Aula de Emprendimiento ha sido seleccionado entre los 5 mejores de la región.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
